@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODO Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .whatsapp-font {
+            font-family: 'Roboto', sans-serif;
+        }
+        #chat-window::-webkit-scrollbar { width: 6px; }
+        #chat-window::-webkit-scrollbar-track { background: #e5ddd5; }
+        #chat-window::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
+        #chat-window::-webkit-scrollbar-thumb:hover { background: #b3b3b3; }
+
+        #chat-window {
+           background-color: #E5DDD5;
+           background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
+        }
+        
+        /* --- Dark Mode Theme --- */
+        .dark {
+            background-color: #0b141a;
+        }
+        .dark #main-container { 
+            background-color: #111B21; 
+            border-color: #374151; 
+        }
+        .dark header { background-color: #202C33; }
+        .dark #chat-window {
+           background-color: #0b141a;
+           background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAADiNXWtAAABcElEQVRIDd2VMU7DQBBF37VwDocERERQCw4BpbCw0OBNHIFShwAFRkzbU2pIUgWEA+CgQCkUBLAFoA9Q5wAChBIgEyE8cztnO3s3eU4ySRa758/M/feUvY/Ff6YPCz12+l49Fp92VSAXgik5u3+B5bI1/A1jY5vY2/E5j+j3rD6Jwbj2VvQeWBApQoQRoJAEqgEwFpCaBoKqQNoHqSgYp2C+gmyA6h1I0gPQ0/xQBq/wBM4QpM4QPM4gNM4gA4c4gY8e1543N9zF+sS8oPgDPEpA7BDpBEw5QE2gFoFNlA2g8Yp2C3QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gMYp2C1QG5A9R6E0QCoXf4pA1f4AE8ZUGOhPABj/ABPOApAzeQd2d5+mBfsoA7xJQKwQ2QTEOSBNgGoFP1A2gcb5Pgr8AeXVyY8nBscwAAAAASUVORK5CYII=");
+        }
+        .dark #chat-window::-webkit-scrollbar-track { background: #202c33; }
+        .dark #chat-window::-webkit-scrollbar-thumb { background: #4a5568; }
+        .dark #chat-window::-webkit-scrollbar-thumb:hover { background: #718096; }
+        .dark footer { background-color: #111B21; }
+        .dark #message-input {
+            background-color: #2A3942;
+            border-color: transparent;
+            color: #e2e8f0;
+        }
+        .dark #message-input::placeholder { color: #94a3b8; }
+        .dark #mic-button { color: #a0aec0; }
+        .dark #mic-button:hover { background-color: #2A3942; }
+        .dark #send-button { background-color: #00A884; }
+        .dark #send-button:hover { background-color: #008a6b; }
+        .dark .bot-bubble { background-color: #202C33; }
+        .dark .user-bubble { background-color: #005C4B; }
+        .dark .message-text { color: #e2e8f0; }
+        .dark .typing-dot { background-color: #a0aec0; }
+        .dark #settings-menu { background-color: #2A3942; color: #e2e8f0; }
+        .dark #settings-menu a:hover { background-color: #374151; }
+        .dark header #search-bar { background-color: #202C33; }
+    </style>
+</head>
+<body class="bg-gray-200 text-gray-800 flex items-center justify-center min-h-screen transition-colors duration-300">
+
+    <div id="main-container" class="w-full max-w-lg h-screen md:h-[95vh] flex flex-col bg-white shadow-2xl md:rounded-xl overflow-hidden border border-gray-300">
+        <!-- Header -->
+        <header class="bg-[#008069] p-3 text-white flex items-center shadow-md z-10 shrink-0 relative">
+             <!-- Back Arrow -->
+            <svg id="back-button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white mr-4 cursor-pointer"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3 shrink-0 flex items-center justify-center">
+                <img id="ai-avatar" src="https://img.freepik.com/premium-photo/futuristic-scifi-processor-with-ai-logo-glowing-neon-lights_916191-20163.jpg" alt="AI Avatar" class="rounded-full w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center">
+                    <h1 class="text-lg font-semibold whatsapp-font">OneDayOnly AI</h1>
+                    <svg class="w-4 h-4 ml-1.5 flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#1877F2" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2z"></path>
+                        <path fill="#FFFFFF" d="M9.999 15.171l-3.585-3.586-1.414 1.414L9.999 18l8.001-8.001-1.414-1.414z"></path>
+                    </svg>
+                </div>
+                <p class="text-xs text-gray-200">online</p>
+            </div>
+             <!-- Header Icons -->
+            <div class="flex items-center space-x-4">
+                <svg id="search-button" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-200 cursor-pointer hover:text-white"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg id="menu-button" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-200 cursor-pointer hover:text-white"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+            </div>
+            <!-- Search Bar -->
+            <div id="search-bar" class="absolute top-0 left-0 w-full h-full bg-[#008069] flex items-center px-4 hidden transition-all">
+                <svg id="close-search-button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white mr-4 cursor-pointer"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <input id="search-input" type="text" placeholder="Search..." class="w-full bg-transparent text-white placeholder-gray-200 focus:outline-none">
+            </div>
+            <!-- Settings Menu -->
+            <div id="settings-menu" class="absolute top-14 right-4 bg-white text-gray-700 rounded-md shadow-lg w-48 py-2 hidden z-20">
+                <a href="#" id="clear-chat-button" class="block px-4 py-2 text-sm hover:bg-gray-100">Clear Chat</a>
+                <a href="#" id="toggle-theme-button" class="block px-4 py-2 text-sm hover:bg-gray-100">Toggle Dark Mode</a>
+            </div>
+        </header>
+
+        <!-- Chat Window -->
+        <main id="chat-window" class="flex-1 p-4 overflow-y-auto">
+            <!-- Messages will be appended here -->
+        </main>
+
+        <!-- Typing Indicator -->
+        <div id="typing-indicator" class="p-2 flex justify-center hidden">
+            <div class="flex items-center space-x-1">
+                <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
+                <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <footer class="bg-gray-100 px-4 py-3 shrink-0">
+            <form id="chat-form" class="flex items-center space-x-3">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="Message" 
+                    autocomplete="off"
+                    class="flex-1 bg-white border-2 border-gray-300 rounded-full py-2 px-5 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-green-500 transition duration-300">
+                <button id="mic-button" type="button" class="text-gray-500 rounded-full p-3 hover:bg-gray-200 focus:outline-none transition duration-300">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"></path></svg>
+                </button>
+                <button id="send-button" type="submit" class="bg-[#128C7E] text-white rounded-full p-3 hover:bg-[#075E54] focus:outline-none transition duration-300 transform hover:scale-110 hidden">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <script>
+        // --- Element References ---
+        const mainContainer = document.getElementById('main-container');
+        const bodyEl = document.querySelector('body');
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const backButton = document.getElementById('back-button');
+        const searchButton = document.getElementById('search-button');
+        const menuButton = document.getElementById('menu-button');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearchButton = document.getElementById('close-search-button');
+        const searchInput = document.getElementById('search-input');
+        const settingsMenu = document.getElementById('settings-menu');
+        const clearChatButton = document.getElementById('clear-chat-button');
+        const toggleThemeButton = document.getElementById('toggle-theme-button');
+        const micButton = document.getElementById('mic-button');
+        const sendButton = document.getElementById('send-button');
+
+        // --- State ---
+        let chatHistory = [];
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+
+        // --- Event Listeners ---
+        chatForm.addEventListener('submit', handleUserMessage);
+        window.addEventListener('load', initializeChat);
+        backButton.addEventListener('click', () => console.log('Back button clicked'));
+        searchButton.addEventListener('click', toggleSearchBar);
+        closeSearchButton.addEventListener('click', toggleSearchBar);
+        menuButton.addEventListener('click', () => settingsMenu.classList.toggle('hidden'));
+        clearChatButton.addEventListener('click', clearChat);
+        toggleThemeButton.addEventListener('click', toggleTheme);
+        searchInput.addEventListener('input', filterMessages);
+        messageInput.addEventListener('input', toggleSendButton);
+
+        // --- Voice Recognition Setup ---
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            micButton.addEventListener('click', startSpeechRecognition);
+            recognition.addEventListener('result', handleVoiceResult);
+            recognition.addEventListener('speechend', () => {
+                recognition.stop();
+                micButton.classList.remove('text-red-500', 'animate-pulse');
+            });
+            recognition.addEventListener('error', (event) => {
+                console.error('Speech recognition error:', event.error);
+                micButton.classList.remove('text-red-500', 'animate-pulse');
+            });
+
+        } else {
+            micButton.style.display = 'none';
+            console.warn('Speech Recognition not supported in this browser.');
+        }
+        
+        // --- Functions ---
+        function initializeChat() {
+            addMessageToChat('bot', 'Hello! I am your AI assistant. How can I help you today?');
+            chatHistory.push({ role: "model", parts: [{ text: 'Hello! I am your AI assistant. How can I help you today?' }] });
+        }
+        
+        async function handleUserMessage(e) {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            addMessageToChat('user', userMessage);
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            messageInput.value = '';
+            toggleSendButton();
+            
+            showTypingIndicator();
+            const botResponse = await getBotResponse(userMessage);
+            chatHistory.push({ role: "model", parts: [{ text: botResponse }] });
+            hideTypingIndicator();
+            addMessageToChat('bot', botResponse);
+        }
+
+        function addMessageToChat(sender, text) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `w-full flex mb-2 message-bubble ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            const bubbleWrapper = document.createElement('div');
+            const bubbleColorClass = sender === 'user' ? 'user-bubble bg-[#DCF8C6]' : 'bot-bubble bg-white';
+            bubbleWrapper.className = `max-w-xs md:max-w-md p-0.5 rounded-lg shadow-sm ${bubbleColorClass}`;
+            
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'px-2 py-1';
+
+            const messageText = document.createElement('p');
+            messageText.style.whiteSpace = 'pre-wrap';
+            messageText.style.wordBreak = 'break-word';
+            messageText.className = 'text-sm message-text text-gray-800';
+            messageText.textContent = text;
+
+            const time = new Date();
+            const timestamp = document.createElement('div');
+            timestamp.className = 'text-right text-xs text-gray-400 mt-1';
+            timestamp.textContent = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+
+            contentContainer.appendChild(messageText);
+            contentContainer.appendChild(timestamp);
+            bubbleWrapper.appendChild(contentContainer);
+            messageContainer.appendChild(bubbleWrapper);
+
+            chatWindow.appendChild(messageContainer);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        
+        function showTypingIndicator() { typingIndicator.classList.remove('hidden'); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function hideTypingIndicator() { typingIndicator.classList.add('hidden'); }
+        
+        function toggleSearchBar() { searchBar.classList.toggle('hidden'); }
+
+        function filterMessages() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const messages = document.querySelectorAll('.message-bubble');
+            messages.forEach(msg => {
+                const text = msg.querySelector('.message-text').textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    msg.style.display = 'flex';
+                } else {
+                    msg.style.display = 'none';
+                }
+            });
+        }
+        
+        function clearChat() {
+            chatWindow.innerHTML = '';
+            chatHistory = [];
+            initializeChat();
+            settingsMenu.classList.add('hidden');
+        }
+
+        function toggleTheme() {
+            bodyEl.classList.toggle('dark');
+            settingsMenu.classList.add('hidden');
+        }
+
+        function startSpeechRecognition() {
+            recognition.start();
+            micButton.classList.add('text-red-500', 'animate-pulse');
+        }
+
+        function handleVoiceResult(event) {
+            const transcript = event.results[0][0].transcript;
+            messageInput.value = transcript;
+            toggleSendButton();
+            // Automatically submit the form with the transcribed text
+            if (messageInput.value.trim()) {
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                chatForm.dispatchEvent(submitEvent);
+            }
+        }
+
+        function toggleSendButton() {
+            if (messageInput.value.trim() !== '') {
+                micButton.classList.add('hidden');
+                sendButton.classList.remove('hidden');
+            } else {
+                micButton.classList.remove('hidden');
+                sendButton.classList.add('hidden');
+            }
+        }
+        
+        async function getBotResponse(userInput) {
+            // ... (LLM API logic remains the same)
+            const apiKey = "AIzaSyAqxJqTnTmZBSg1psbEfLvoRGqh5YXUih4";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: chatHistory };
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    return candidate.content.parts[0].text;
+                }
+                console.error("Unexpected API response structure:", result);
+                return "I received a response, but couldn't process it.";
+            } catch (error) {
+                console.error("Error fetching bot response:", error);
+                return "Sorry, I'm having trouble connecting. Please try again later.";
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
